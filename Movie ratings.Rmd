@@ -1,0 +1,99 @@
+---
+title: "Movie ratings"
+output: html_document
+date: "2026-02-23"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R ny embedded R code chunks within the document. You can embed an R code chunk like this:Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of a
+
+
+
+
+Introduction
+
+This project analyzes a small movie dataset to identify genre-wise rating trends and overall rating distribution using R. The analysis includes aggregation, sorting, and data visualization using dplyr and ggplot2.
+
+Load Libraries
+
+```{r}
+library(dplyr)
+library(ggplot2)
+```
+
+Create dataset
+```{r}
+movies <- data.frame(
+  Title = c("The Truman Show", "Inception", "The Notebook", "Titanic",
+            "Pride and Prejudice", "John Wick", "Interstellar",
+            "La La Land", "Harry Potter"),
+  
+  Genre = c("Drama", "Sci-Fi", "Romance", "Romance",
+            "Romance", "Action", "Sci-Fi",
+            "Romance", "Fantasy"),
+  
+  Rating = c(8.2, 9.0, 7.5, 8.0,
+             8.1, 7.8, 9.2,
+             8.0, 8.5)
+)
+
+head(movies)
+```
+
+```{r}
+str(movies)
+summary(movies)
+```
+
+```{r}
+genre_summary <- movies %>%
+  group_by(Genre) %>%
+  summarise(
+    Average_Rating = mean(Rating),
+    Movie_Count = n()
+  ) %>%
+  arrange(desc(Average_Rating))
+
+genre_summary
+```
+Visualization: Average Rating by Genre
+```{r}
+ggplot(genre_summary, aes(x = reorder(Genre, Average_Rating), 
+                          y = Average_Rating, 
+                          fill = Genre)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Average Rating by Genre",
+       x = "Genre",
+       y = "Average Rating") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+Identify Top Rated Movie
+```{r}
+top_movie <- movies %>%
+  arrange(desc(Rating)) %>%
+  slice(1)
+
+top_movie
+```
+Rating Distribution
+```{r}
+ggplot(movies, aes(x = Rating)) +
+  geom_histogram(binwidth = 0.5, fill = "skyblue", color = "black") +
+  labs(title = "Distribution of Movie Ratings",
+       x = "Rating",
+       y = "Count") +
+  theme_minimal()
+```
+
+Conclusion
+
+The analysis shows that Sci-Fi has the highest average rating among the selected movies. Interstellar is the top-rated movie. Most movie ratings fall between 7.5 and 9.5, indicating generally strong audience reception across genres.
